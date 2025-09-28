@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Header from '@/components/layout/Header';
 import PostCard from '@/components/common/PostCard';
 import { PostProps } from '@/interfaces';
@@ -10,15 +10,11 @@ interface ApiPost {
   userId: number;
 }
 
-export default function Posts() {
-  const [posts, setPosts] = useState<ApiPost[]>([]);
+interface PostsPageProps {
+  posts: ApiPost[];
+}
 
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(response => response.json())
-      .then(data => setPosts(data.slice(0, 10))); // Limit to 10 posts
-  }, []);
-
+export default function Posts({ posts }: PostsPageProps) {
   return (
     <div>
       <Header />
@@ -28,4 +24,16 @@ export default function Posts() {
       ))}
     </div>
   );
+}
+
+export async function getStaticProps() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+  const data = await res.json();
+  const posts = data.slice(0, 10); // Limit to 10 posts
+
+  return {
+    props: {
+      posts,
+    },
+  };
 }
